@@ -14,7 +14,7 @@ class NoteController extends Controller
     {
         $notes = Note::OrderBy('date','desc')->get();
 
-        return view('note.index', compact('notes'));
+        return view('notes.index', compact('notes'));
     }
 
     /**
@@ -46,7 +46,7 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        return view('notes.show', compact('notes'));
+        return view('notes.show', compact('note'));
     }
 
     /**
@@ -54,7 +54,7 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        return view('notes.edit', compact('notes'));
+        return view('notes.edit', compact('note'));
     }
 
     /**
@@ -79,7 +79,7 @@ class NoteController extends Controller
     public function destroy(Note $note)
     {
         $note->delete();
-        
+
         return redirect()->route('notes.index')->with('success', 'Заметка успешно удалена!');
     }
 }
