@@ -6,21 +6,32 @@
     <title>Мои заметки</title>
 </head>
 <body>
-    <h1>Список заметок</h1>
+    {{-- Навигация --}}
+    <div style="background: #f0f0f0; padding: 10px; margin-bottom: 20px;">
+        <span>Привет, {{ Auth::user()->name }}!</span>
+        
+        <form action="{{ route('logout') }}" method="POST" style="display:inline; float:right;">
+            @csrf
+            <button type="submit">Выйти</button>
+        </form>
+        
+        <a href="{{ route('dashboard') }}" style="margin-left: 20px;">
+            <button type="button">Панель</button>
+        </a>
+    </div>
 
-    {{-- Сообщение об успехе --}}
+    <h1>Мои заметки</h1>
+
     @if(session('success'))
         <p style="color: green;">{{ session('success') }}</p>
     @endif
 
-    {{-- Кнопка создания новой заметки --}}
     <a href="{{ route('notes.create') }}">
         <button>Создать новую заметку</button>
     </a>
 
     <hr>
 
-    {{-- Проверка: есть ли заметки --}}
     @if($notes->count() > 0)
         <table border="1" cellpadding="10">
             <thead>
@@ -32,24 +43,20 @@
                 </tr>
             </thead>
             <tbody>
-                {{-- Цикл по всем заметкам --}}
                 @foreach($notes as $note)
                     <tr>
                         <td>{{ $note->id }}</td>
                         <td>{{ $note->title }}</td>
                         <td>{{ $note->date }}</td>
                         <td>
-                            {{-- Кнопка просмотра --}}
                             <a href="{{ route('notes.show', $note->id) }}">
                                 <button>Просмотр</button>
                             </a>
                             
-                            {{-- Кнопка редактирования --}}
                             <a href="{{ route('notes.edit', $note->id) }}">
                                 <button>Редактировать</button>
                             </a>
                             
-                            {{-- Форма удаления --}}
                             <form action="{{ route('notes.destroy', $note->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')

@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Note;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $notes = Note::OrderBy('date','desc')->get();
+        $notes = Auth::user()->notes()->OrderBy('date','desc')->get();
 
         return view('notes.index', compact('notes'));
     }
@@ -36,7 +34,7 @@ class NoteController extends Controller
             'date' => 'required|date',
         ]);
 
-        Note::create($validated);
+        Auth::user()->notes()->create($validated);
 
         return redirect()->route('notes.index')->with('success', 'Заметка создана успешно!');
     }
@@ -46,6 +44,10 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
+        if($note->user_id !== Auth::id()) {
+            abort(403, 'Доступ запрещен!');
+        }
+
         return view('notes.show', compact('note'));
     }
 
@@ -54,6 +56,10 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
+        if($note->user_id !== Auth::id()) {
+            abort(403, 'Доступ запрещен!');
+        }
+
         return view('notes.edit', compact('note'));
     }
 
@@ -62,6 +68,10 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
+        if($note->user_id !== Auth::id()) {
+            abort(403, 'Доступ запрещен!');
+        }
+
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
@@ -78,6 +88,10 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
+        if($note->user_id !== Auth::id()) {
+            abort(403, 'Доступ запрещен!');
+        }
+
         $note->delete();
 
         return redirect()->route('notes.index')->with('success', 'Заметка успешно удалена!');
