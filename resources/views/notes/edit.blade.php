@@ -18,10 +18,9 @@
         </div>
     @endif
 
-    {{-- Форма редактирования --}}
     <form action="{{ route('notes.update', $note->id) }}" method="POST">
         @csrf
-        @method('PUT') {{-- Метод PUT для обновления --}}
+        @method('PUT')
 
         <div>
             <label>Название:</label><br>
@@ -35,7 +34,7 @@
 
         <div>
             <label>Дата:</label><br>
-            <input type="date" name="date" value="{{ old('date', $note->date) }}" required>
+            <input type="date" name="note_date" value="{{ old('note_date', $note->note_date->format('Y-m-d')) }}" required>
         </div>
 
         <br>

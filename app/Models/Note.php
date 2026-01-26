@@ -9,8 +9,12 @@ class Note extends Model
     protected $fillable = [
         'title',
         'description',
-        'date',
+        'note_date',
         'user_id'
+    ];
+
+        protected $casts = [
+        'note_date' => 'date',
     ];
 
     public function user(): BelongsTo

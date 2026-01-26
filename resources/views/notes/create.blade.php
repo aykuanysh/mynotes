@@ -35,7 +35,7 @@
 
         <div>
             <label>Дата:</label><br>
-            <input type="date" name="date" value="{{ old('note_date') }}" required>
+            <input type="date" name="note_date" value="{{ old('note_date') }}" required>
         </div>
 
         <br>

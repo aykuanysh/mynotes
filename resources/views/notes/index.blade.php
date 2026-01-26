@@ -47,7 +47,7 @@
                     <tr>
                         <td>{{ $note->id }}</td>
                         <td>{{ $note->title }}</td>
-                        <td>{{ $note->date }}</td>
+                        <td>{{ $note->note_date->format('d.m.Y') }}</td>
                         <td>
                             <a href="{{ route('notes.show', $note->id) }}">
                                 <button>Просмотр</button>

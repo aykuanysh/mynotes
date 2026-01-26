@@ -31,7 +31,7 @@ class NoteController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'date' => 'required|date',
+            'note_date' => 'required|date',
         ]);
 
         Auth::user()->notes()->create($validated);
@@ -75,7 +75,7 @@ class NoteController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'date' => 'required|date',
+            'note_date' => 'required|date',
         ]);
 
         $note->update($validated);

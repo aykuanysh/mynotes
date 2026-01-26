@@ -8,15 +8,15 @@
 <body>
     <h1>{{ $note->title }}</h1>
 
-    <p><strong>Дата:</strong> {{ $note->date }}</p>
+    <p><strong>Дата:</strong> {{ $note->note_date->format('d.m.Y') }}</p>
     
     <p><strong>Описание:</strong></p>
     <p>{{ $note->description }}</p>
 
     <hr>
 
-    <p><small>Создано: {{ $note->created_at }}</small></p>
-    <p><small>Обновлено: {{ $note->updated_at }}</small></p>
+    <p><small>Создано: {{ $note->created_at->format('d.m.Y H:i') }}</small></p>
+    <p><small>Обновлено: {{ $note->updated_at->format('d.m.Y H:i') }}</small></p>
 
     <hr>
 
