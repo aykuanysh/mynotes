@@ -17,6 +17,8 @@ COPY . .
 RUN composer install --no-interaction --optimize-autoloader && \
     cp .env.example .env && \
     php artisan key:generate && \
+    npm install && \
+    npm run build && \
     chmod -R 777 storage bootstrap/cache database
 
 EXPOSE 8000
