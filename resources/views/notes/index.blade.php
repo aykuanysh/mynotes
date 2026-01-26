@@ -6,7 +6,6 @@
     <title>Мои заметки</title>
 </head>
 <body>
-    {{-- Навигация --}}
     <div style="background: #f0f0f0; padding: 10px; margin-bottom: 20px;">
         <span>Привет, {{ Auth::user()->name }}!</span>
         
@@ -36,7 +35,7 @@
         <table border="1" cellpadding="10">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>№</th>
                     <th>Название</th>
                     <th>Дата</th>
                     <th>Действия</th>
@@ -45,7 +44,7 @@
             <tbody>
                 @foreach($notes as $note)
                     <tr>
-                        <td>{{ $note->id }}</td>
+                        <td>{{ $note->user_note_id }}</td>
                         <td>{{ $note->title }}</td>
                         <td>{{ $note->note_date->format('d.m.Y') }}</td>
                         <td>
