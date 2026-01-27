@@ -3,6 +3,7 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     unzip \
+    curl \
     && docker-php-ext-install pdo_sqlite
 
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -23,4 +24,4 @@ RUN composer install --no-interaction --optimize-autoloader && \
 
 EXPOSE 8000
 
-CMD sh -c "touch database/database.sqlite && php artisan migrate --force --seed && php artisan serve --host=0.0.0.0 --port=8000"
+CMD sh -c "touch database/database.sqlite && php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=8000"

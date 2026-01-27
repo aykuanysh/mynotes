@@ -4,4 +4,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./database:/app/database
+      - db-data:/app/database
+
+volumes:
+  db-data:
