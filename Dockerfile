@@ -3,11 +3,11 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     unzip \
-    curl \
-    && docker-php-ext-install pdo_sqlite
+    && docker-php-ext-install pdo_sqlite \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs
+RUN curl -fsSL https://nodejs.org/dist/v20.20.0/node-v20.20.0-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
