@@ -4,44 +4,214 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Редактировать: {{ $note->title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 24px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-warning {
+            background: #ffa94d;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ff922b;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .note-badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        .alert-error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .alert-error ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .alert-error li {
+            padding: 5px 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Редактировать заметку</h1>
-
-    @if($errors->any())
-        <div style="color: red;">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form action="{{ route('notes.update', $note->id) }}" method="POST">
-        @csrf
-        @method('PUT')
-
-        <div>
-            <label>Название:</label><br>
-            <input type="text" name="title" value="{{ old('title', $note->title) }}" required>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <h1>✏️ Редактировать заметку</h1>
+            <a href="{{ route('notes.index') }}" class="btn btn-secondary">← К списку</a>
         </div>
 
-        <div>
-            <label>Описание:</label><br>
-            <textarea name="description" rows="5" cols="50" required>{{ old('description', $note->description) }}</textarea>
-        </div>
+        <!-- Форма -->
+        <div class="form-container">
+            <span class="note-badge"># {{ $note->user_note_id }}</span>
 
-        <div>
-            <label>Дата:</label><br>
-            <input type="date" name="note_date" value="{{ old('note_date', $note->note_date->format('Y-m-d')) }}" required>
-        </div>
+            @if($errors->any())
+                <div class="alert-error">
+                    <strong>⚠️ Ошибки валидации:</strong>
+                    <ul>
+                        @foreach($errors->all() as $error)
+                            <li>• {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-        <br>
-        <button type="submit">Обновить</button>
-        <a href="{{ route('notes.index') }}">
-            <button type="button">Отмена</button>
-        </a>
-    </form>
+            <form action="{{ route('notes.update', $note->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="form-group">
+                    <label for="title">📝 Название заметки *</label>
+                    <input type="text" id="title" name="title" value="{{ old('title', $note->title) }}" required placeholder="Введите название...">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">📄 Описание *</label>
+                    <textarea id="description" name="description" required placeholder="Опишите вашу заметку...">{{ old('description', $note->description) }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="note_date">📅 Дата *</label>
+                    <input type="date" id="note_date" name="note_date" value="{{ old('note_date', $note->note_date->format('Y-m-d')) }}" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-warning">✓ Обновить заметку</button>
+                    <a href="{{ route('notes.index') }}" class="btn btn-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
