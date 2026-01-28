@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             background: white;
             padding: 20px 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -75,7 +76,7 @@
             background: white;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .alert-error {
@@ -153,6 +154,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Шапка -->
@@ -164,14 +166,14 @@
         <!-- Форма -->
         <div class="form-container">
             @if($errors->any())
-                <div class="alert-error">
-                    <strong>⚠️ Ошибки валидации:</strong>
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>• {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert-error">
+                <strong>⚠️ Ошибки валидации:</strong>
+                <ul>
+                    @foreach($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <form action="{{ route('notes.store') }}" method="POST">
@@ -189,7 +191,12 @@
 
                 <div class="form-group">
                     <label for="note_date">📅 Дата *</label>
-                    <input type="date" id="note_date" name="note_date" value="{{ old('note_date') }}" required>
+                    <input type="date"
+                        name="note_date"
+                        value="{{ old('note_date') }}"
+                        min="1900-01-01"
+                        max="2100-12-31"
+                        required>
                 </div>
 
                 <div class="form-actions">
@@ -200,4 +207,5 @@
         </div>
     </div>
 </body>
+
 </html>
