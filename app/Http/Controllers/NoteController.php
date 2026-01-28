@@ -10,7 +10,7 @@ class NoteController extends Controller
 {
     public function index()
     {
-        $notes = Auth::user()->notes()->OrderBy('date','desc')->get();
+        $notes = Auth::user()->notes()->OrderBy('date', 'desc')->get();
 
         return view('notes.index', compact('notes'));
     }
@@ -31,7 +31,7 @@ class NoteController extends Controller
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'note_date' => 'required|date',
+            'note_date' => 'required|date|after_or_equal:1900-01-01|before_or_equal:2100-12-31'
         ]);
 
         Auth::user()->notes()->create($validated);
@@ -44,7 +44,7 @@ class NoteController extends Controller
      */
     public function show(Note $note)
     {
-        if($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id()) {
             abort(403, 'Доступ запрещен!');
         }
 
@@ -56,7 +56,7 @@ class NoteController extends Controller
      */
     public function edit(Note $note)
     {
-        if($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id()) {
             abort(403, 'Доступ запрещен!');
         }
 
@@ -68,14 +68,14 @@ class NoteController extends Controller
      */
     public function update(Request $request, Note $note)
     {
-        if($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id()) {
             abort(403, 'Доступ запрещен!');
         }
 
         $validated = $request->validate([
             'title' => 'required|max:255',
             'description' => 'required',
-            'note_date' => 'required|date',
+            'note_date' => 'required|date|after_or_equal:1900-01-01|before_or_equal:2100-12-31'
         ]);
 
         $note->update($validated);
@@ -88,7 +88,7 @@ class NoteController extends Controller
      */
     public function destroy(Note $note)
     {
-        if($note->user_id !== Auth::id()) {
+        if ($note->user_id !== Auth::id()) {
             abort(403, 'Доступ запрещен!');
         }
 

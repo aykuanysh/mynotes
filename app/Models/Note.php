@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Note extends Model
 {
@@ -14,28 +16,27 @@ class Note extends Model
         'user_note_id'
     ];
 
-        protected $casts = [
+    protected $casts = [
         'note_date' => 'date',
     ];
 
-
-     protected static function boot()
+    protected static function boot()
     {
         parent::boot();
 
-        // Автоматически устанавливаем user_note_id при создании заметки
         static::creating(function ($note) {
             if (is_null($note->user_note_id)) {
-                // Находим максимальный user_note_id для этого пользователя
                 $maxId = static::where('user_id', $note->user_id)
                     ->max('user_note_id');
-                
-                // Устанавливаем следующий номер (или 1 если это первая заметка)
+
                 $note->user_note_id = ($maxId ?? 0) + 1;
             }
         });
     }
 
+    /**
+     * @return BelongsTo<User, Note>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
