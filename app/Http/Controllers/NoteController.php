@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\ImportNotesFromApiJob;
 
 class NoteController extends Controller
 {
@@ -95,5 +97,33 @@ class NoteController extends Controller
         $note->delete();
 
         return redirect()->route('notes.index')->with('success', 'Заметка успешно удалена!');
+    }
+
+
+    /**
+     * Show the import form.
+     */
+    public function import()
+    {
+        return view('notes.import');
+    }
+
+    /**
+     * Handle the import request.
+     */
+    public function processImport(Request $request)
+    {
+        $validated = $request->validate([
+            'api_url' => 'required|url',
+        ], [
+            'api_url.required' => 'URL API обязателен для заполнения',
+            'api_url.url' => 'Введите корректный URL',
+        ]);
+
+        // Отправить задачу в очередь
+        ImportNotesFromApiJob::dispatch(Auth::id(), $validated['api_url']);
+
+        return redirect()->route('notes.index')
+            ->with('success', 'Импорт запущен! Заметки появятся через несколько секунд.');
     }
 }

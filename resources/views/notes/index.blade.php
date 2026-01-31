@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             background: white;
             padding: 20px 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -125,14 +126,14 @@
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
             border-left: 5px solid #667eea;
         }
 
         .note-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
 
         .note-number {
@@ -182,7 +183,7 @@
             background: white;
             padding: 60px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
 
@@ -217,6 +218,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Шапка -->
@@ -224,6 +226,7 @@
             <h1>📝 Мои заметки</h1>
             <div class="header-buttons">
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">← Панель</a>
+                <a href="{{ route('notes.import') }}" class="btn btn-primary">📥 Импорт</a>
                 <a href="{{ route('notes.create') }}" class="btn btn-success">+ Создать заметку</a>
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
@@ -234,42 +237,43 @@
 
         <!-- Сообщение об успехе -->
         @if(session('success'))
-            <div class="alert">
-                ✓ {{ session('success') }}
-            </div>
+        <div class="alert">
+            ✓ {{ session('success') }}
+        </div>
         @endif
 
         <!-- Список заметок -->
         @if($notes->count() > 0)
-            <div class="notes-grid">
-                @foreach($notes as $note)
-                    <div class="note-card">
-                        <span class="note-number"># {{ $note->user_note_id }}</span>
-                        <h3 class="note-title">{{ $note->title }}</h3>
-                        <p class="note-description">{{ Str::limit($note->description, 100) }}</p>
-                        <div class="note-date">
-                            📅 {{ $note->note_date->format('d.m.Y') }}
-                        </div>
-                        <div class="note-actions">
-                            <a href="{{ route('notes.show', $note->id) }}" class="btn btn-primary">Просмотр</a>
-                            <a href="{{ route('notes.edit', $note->id) }}" class="btn btn-warning">Изменить</a>
-                            <form action="{{ route('notes.destroy', $note->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить заметку?')">Удалить</button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
+        <div class="notes-grid">
+            @foreach($notes as $note)
+            <div class="note-card">
+                <span class="note-number"># {{ $note->user_note_id }}</span>
+                <h3 class="note-title">{{ $note->title }}</h3>
+                <p class="note-description">{{ Str::limit($note->description, 100) }}</p>
+                <div class="note-date">
+                    📅 {{ $note->note_date->format('d.m.Y') }}
+                </div>
+                <div class="note-actions">
+                    <a href="{{ route('notes.show', $note->id) }}" class="btn btn-primary">Просмотр</a>
+                    <a href="{{ route('notes.edit', $note->id) }}" class="btn btn-warning">Изменить</a>
+                    <form action="{{ route('notes.destroy', $note->id) }}" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Удалить заметку?')">Удалить</button>
+                    </form>
+                </div>
             </div>
+            @endforeach
+        </div>
         @else
-            <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
-                <h2>Заметок пока нет</h2>
-                <p>Создайте свою первую заметку, чтобы начать работу!</p>
-                <a href="{{ route('notes.create') }}" class="btn btn-success">+ Создать первую заметку</a>
-            </div>
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <h2>Заметок пока нет</h2>
+            <p>Создайте свою первую заметку, чтобы начать работу!</p>
+            <a href="{{ route('notes.create') }}" class="btn btn-success">+ Создать первую заметку</a>
+        </div>
         @endif
     </div>
 </body>
+
 </html>
