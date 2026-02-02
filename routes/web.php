@@ -24,7 +24,10 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::resource('notes', NoteController::class);
+
+    Route::get('notes-import', [NoteController::class, 'import'])->name('notes.import');
+    Route::post('notes-import', [NoteController::class, 'processImport'])->name('notes.import.process');
 });
 
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
