@@ -3,7 +3,7 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     unzip \
-    && docker-php-ext-install pdo_sqlite \
+    && docker-php-ext-install pdo_sqlite pcntl\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -16,7 +16,11 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-interaction --optimize-autoloader && \
+    composer require predis/predis && \
     cp .env.example .env && \
+    sed -i 's/QUEUE_CONNECTION=database/QUEUE_CONNECTION=redis/' .env && \
+    sed -i 's/REDIS_CLIENT=phpredis/REDIS_CLIENT=predis/' .env && \
+    sed -i 's/REDIS_HOST=127.0.0.1/REDIS_HOST=redis/' .env && \
     php artisan key:generate && \
     npm install && \
     npm run build && \

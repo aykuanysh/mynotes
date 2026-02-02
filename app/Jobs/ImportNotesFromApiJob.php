@@ -31,43 +31,35 @@ class ImportNotesFromApiJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            // Логируем начало импорта
             Log::info("Начало импорта для пользователя {$this->userId} из {$this->apiUrl}");
 
-            // Получаем пользователя
             $user = User::findOrFail($this->userId);
 
-            // Скачиваем данные с API
             $response = Http::timeout(30)->get($this->apiUrl);
 
-            // Проверяем что запрос успешен
             if (!$response->successful()) {
                 Log::error("API запрос не удался: " . $response->status());
                 return;
             }
 
-            // Получаем данные в формате JSON
             $posts = $response->json();
-            
 
-            // Импортируем только первые 10 заметок
-            $postsToImport = array_slice($posts, 0, 10);
+            $postsToImport = $posts;
 
             Log::info("Импортируем " . count($postsToImport) . " заметок");
 
-            // Создаем заметки
             foreach ($postsToImport as $post) {
                 $user->notes()->create([
-                    'title' => substr($post['title'], 0, 255), // Обрезаем до 255 символов
+                    'title' => substr($post['title'], 0, 255),
                     'description' => $post['body'],
-                    'note_date' => now(), // Текущая дата
+                    'note_date' => now(),
                 ]);
             }
 
             Log::info("Импорт успешно завершен для пользователя {$this->userId}");
         } catch (\Exception $e) {
             Log::error("Ошибка импорта: " . $e->getMessage());
-            throw $e; // Перебрасываем исключение для повтора задачи
+            throw $e;
         }
     }
 
