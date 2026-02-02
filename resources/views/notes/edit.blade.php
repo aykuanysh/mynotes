@@ -176,7 +176,6 @@
 
         <!-- Форма -->
         <div class="form-container">
-            <span class="note-badge"># {{ $note->user_note_id }}</span>
 
             @if($errors->any())
             <div class="alert-error">

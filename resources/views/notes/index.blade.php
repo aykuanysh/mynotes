@@ -245,9 +245,9 @@
         <!-- Список заметок -->
         @if($notes->count() > 0)
         <div class="notes-grid">
-            @foreach($notes as $note)
+            @foreach($notes as $index => $note)
             <div class="note-card">
-                <span class="note-number"># {{ $note->user_note_id }}</span>
+                <span class="note-number">#{{ $index + 1 }}</span>
                 <h3 class="note-title">{{ $note->title }}</h3>
                 <p class="note-description">{{ Str::limit($note->description, 100) }}</p>
                 <div class="note-date">

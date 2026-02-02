@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             background: white;
             padding: 20px 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
@@ -99,7 +100,7 @@
             background: white;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .note-badge {
@@ -175,6 +176,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Шапка -->
@@ -188,8 +190,7 @@
 
         <!-- Содержимое заметки -->
         <div class="note-content">
-            <span class="note-badge"># {{ $note->user_note_id }}</span>
-            
+
             <h1 class="note-title">{{ $note->title }}</h1>
 
             <div class="note-meta">
@@ -218,4 +219,5 @@
         </div>
     </div>
 </body>
+
 </html>
