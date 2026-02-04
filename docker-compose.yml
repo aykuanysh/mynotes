@@ -1,23 +1,23 @@
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: docker/php.dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - db-data:/app/database
-    depends_on:
-      - redis
-    environment:
-      - REDIS_HOST:redis
-      - REDIS_PORT:6379
+      - .:/app
 
   redis:
     image: redis:7-alpine
     ports: 
       - "6379:6379"
-    volumes:
-      - redis-data:/data
 
-volumes:
-  db-data:
-  redis-data:
+  horizon:
+    build: 
+      context: .
+      dockerfile: docker/horizon.dockerfile
+    volumes:
+      - .:/app
+
+
