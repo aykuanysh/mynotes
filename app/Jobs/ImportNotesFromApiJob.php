@@ -4,10 +4,12 @@ namespace App\Jobs;
 
 use App\Models\Note;
 use App\Models\User;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ImportNotesFromApiJob implements ShouldQueue
 {
@@ -35,6 +37,7 @@ class ImportNotesFromApiJob implements ShouldQueue
 
             $user = User::findOrFail($this->userId);
 
+            /** @var \Illuminate\Http\Client\Response $response */
             $response = Http::timeout(30)->get($this->apiUrl);
 
             if (!$response->successful()) {
@@ -48,13 +51,28 @@ class ImportNotesFromApiJob implements ShouldQueue
 
             Log::info("Импортируем " . count($postsToImport) . " заметок");
 
-            foreach ($postsToImport as $post) {
-                $user->notes()->create([
-                    'title' => substr($post['title'], 0, 255),
-                    'description' => $post['body'],
-                    'note_date' => now(),
-                ]);
-            }
+            DB::transaction(function () use ($user, $postsToImport) {
+
+                foreach ($postsToImport as $index => $post) {
+
+                    if (empty($post['title']) || trim($post['title']) === '') {
+                        throw new Exception("Заметка #{$index}: отсутвует поле 'title'!");
+                    }
+
+                    if (!isset($post['body'])) {
+                        throw new Exception("Заметка #{$index}:  отсутствует поле 'body'!");
+                    }
+
+
+                    $user->notes()->create([
+                        'title' => substr($post['title'], 0, 255),
+                        'description' => $post['body'],
+                        'note_date' => now(),
+                    ]);
+                }
+            });
+
+
 
             Log::info("Импорт успешно завершен для пользователя {$this->userId}");
         } catch (\Exception $e) {

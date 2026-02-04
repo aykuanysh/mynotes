@@ -19,5 +19,3 @@ services:
       dockerfile: docker/horizon.dockerfile
     volumes:
       - .:/app
-
-
