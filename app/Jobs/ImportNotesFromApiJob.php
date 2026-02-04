@@ -32,51 +32,50 @@ class ImportNotesFromApiJob implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info("Начало импорта для пользователя {$this->userId} из {$this->apiUrl}");
+
+        $user = User::findOrFail($this->userId);
+
+        /** @var \Illuminate\Http\Client\Response $response */
+        $response = Http::timeout(30)->get($this->apiUrl);
+
+        if (!$response->successful()) {
+            throw new Exception("API запрос не удался: " . $response->status());
+        }
+
+        $posts = $response->json();
+
+        if (!is_array($posts)) {
+            throw new Exception("API вернул неожиданный формат данных");
+        }
+
+        Log::info("Импортируем " . count($posts) . " заметок");
+
         try {
-            Log::info("Начало импорта для пользователя {$this->userId} из {$this->apiUrl}");
+            DB::beginTransaction();
 
-            $user = User::findOrFail($this->userId);
+            foreach ($posts as $index => $post) {
+                if (empty($post['title']) || trim($post['title']) === '') {
+                    throw new Exception("Заметка #{$index}: отсутствует поле 'title'!");
+                }
 
-            /** @var \Illuminate\Http\Client\Response $response */
-            $response = Http::timeout(30)->get($this->apiUrl);
+                if (!isset($post['body'])) {
+                    throw new Exception("Заметка #{$index}: отсутствует поле 'body'!");
+                }
 
-            if (!$response->successful()) {
-                Log::error("API запрос не удался: " . $response->status());
-                return;
+                $user->notes()->create([
+                    'title' => substr($post['title'], 0, 255),
+                    'description' => $post['body'],
+                    'note_date' => now(),
+                ]);
             }
 
-            $posts = $response->json();
-
-            $postsToImport = $posts;
-
-            Log::info("Импортируем " . count($postsToImport) . " заметок");
-
-            DB::transaction(function () use ($user, $postsToImport) {
-
-                foreach ($postsToImport as $index => $post) {
-
-                    if (empty($post['title']) || trim($post['title']) === '') {
-                        throw new Exception("Заметка #{$index}: отсутвует поле 'title'!");
-                    }
-
-                    if (!isset($post['body'])) {
-                        throw new Exception("Заметка #{$index}:  отсутствует поле 'body'!");
-                    }
-
-
-                    $user->notes()->create([
-                        'title' => substr($post['title'], 0, 255),
-                        'description' => $post['body'],
-                        'note_date' => now(),
-                    ]);
-                }
-            });
-
-
+            DB::commit();
 
             Log::info("Импорт успешно завершен для пользователя {$this->userId}");
         } catch (\Exception $e) {
-            Log::error("Ошибка импорта: " . $e->getMessage());
+            DB::rollBack();
+            Log::error("Ошибка импорта при сохранении заметок: " . $e->getMessage());
             throw $e;
         }
     }
