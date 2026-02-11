@@ -1,0 +1,11 @@
+﻿id,title,description,note_date
+1,Buy groceries,Milk bread eggs,2026-02-01
+2,Daily workout,,2026-02-02
+3,Read book,Clean Architecture chapter 3,
+4,Meeting with manager,,2026-02-03
+5,Fix bug #142,Null pointer exception in importer,2026-02-04
+6,Watch tutorial,Laravel Service Container basics,
+7,Plan vacation,,2026-03-10
+8,Write tests,Increase coverage to 20 percent,
+9,Call parents,, 
+10,Refactor code,Move logic to service layer,2026-02-05

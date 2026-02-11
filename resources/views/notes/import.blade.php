@@ -56,7 +56,8 @@
             color: #333;
         }
 
-        input[type="url"] {
+        input[type="url"],
+        input[type="file"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -67,6 +68,20 @@
         input[type="url"]:focus {
             outline: none;
             border-color: #2196F3;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
         }
 
         .btn {
@@ -110,6 +125,24 @@
             list-style: none;
             margin-top: 10px;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .format-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .format-hint code {
+            background: #f0f0f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
     </style>
 </head>
 
@@ -120,7 +153,6 @@
         <!-- Информационный блок -->
         <div class="info-box">
             <p><strong>ℹ️ Информация:</strong></p>
-            <p>• Будут импортированы первые 10 заметок из API</p>
             <p>• Импорт выполняется в фоновом режиме</p>
             <p>• Заметки появятся через несколько секунд</p>
         </div>
@@ -138,18 +170,47 @@
         @endif
 
         <!-- Форма -->
-        <form action="{{ route('notes.import.process') }}" method="POST">
+        <form action="{{ route('notes.import.process') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
-                <label for="api_url">🔗 URL API *</label>
+                <label>Тип импорта</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="import_type" value="api"
+                            {{ old('import_type', 'api') === 'api' ? 'checked' : '' }}>
+                        Из API
+                    </label>
+                    <label>
+                        <input type="radio" name="import_type" value="file"
+                            {{ old('import_type') === 'file' ? 'checked' : '' }}>
+                        Из файла (CSV, XML)
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group" id="api-section">
+                <label for="api_url">🔗 URL API</label>
                 <input
                     type="url"
                     id="api_url"
                     name="api_url"
                     value="{{ old('api_url', 'https://jsonplaceholder.typicode.com/posts') }}"
-                    required
                     placeholder="https://jsonplaceholder.typicode.com/posts">
+            </div>
+
+            <div class="form-group hidden" id="file-section">
+                <label for="import_file">📄 Выберите файл</label>
+                <input
+                    type="file"
+                    id="import_file"
+                    name="import_file"
+                    accept=".csv,.xml">
+                <div class="format-hint">
+                    <strong>CSV:</strong> первая строка — заголовки <code>title,description,note_date</code><br>
+                    <strong>XML:</strong> структура <code>&lt;notes&gt;&lt;note&gt;&lt;title&gt;...&lt;/title&gt;&lt;description&gt;...&lt;/description&gt;&lt;/note&gt;&lt;/notes&gt;</code><br>
+                    Поле <code>note_date</code> опционально. Максимум 2 МБ.
+                </div>
             </div>
 
             <div>
@@ -158,6 +219,29 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.querySelectorAll('input[name="import_type"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                var apiSection = document.getElementById('api-section');
+                var fileSection = document.getElementById('file-section');
+
+                if (this.value === 'api') {
+                    apiSection.classList.remove('hidden');
+                    fileSection.classList.add('hidden');
+                } else {
+                    apiSection.classList.add('hidden');
+                    fileSection.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Инициализация при загрузке (для корректного отображения после ошибки валидации)
+        var checked = document.querySelector('input[name="import_type"]:checked');
+        if (checked) {
+            checked.dispatchEvent(new Event('change'));
+        }
+    </script>
 </body>
 
 </html>

@@ -8,24 +8,20 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class JSONImporter implements IImporter
 {
 
-    public function importHandle(string $apiUrl, int $userId): array
+    public function importHandle(string $source, int $userId): void
     {
-        Log::info("Начало импорта для пользователя {$userId} из {$apiUrl}");
+        Log::info("Начало импорта для пользователя {$userId} из {$source}");
 
         $user = User::findOrFail($userId);
+        $filePath = Storage::path($source);
 
-        /** @var \Illuminate\Http\Client\Response $response */
-        $response = Http::timeout(30)->get($apiUrl);
-
-        if (!$response->successful()) {
-            throw new Exception("API запрос не удался с кодом: " . $response->status());
-        }
-
-        $posts = $response->json();
+        $json = file_get_contents($filePath);
+        $posts = json_decode($json, true);
 
         if (!is_array($posts)) {
             throw new Exception("API вернул неожиданный формат данных");
@@ -62,6 +58,5 @@ class JSONImporter implements IImporter
             Log::error("Ошибка импорта: " . $e->getMessage());
             throw $e;
         }
-        return [];
     }
 }

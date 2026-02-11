@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Jobs\ImportNotesFromApiJob;
+use App\Jobs\ImportNotesJob;
+
 
 class NoteController extends Controller
 {
     public function index()
     {
-        $notes = Auth::user()->notes()->OrderBy('date', 'desc')->get();
+        $notes = Auth::user()->notes()->orderBy('note_date', 'desc')->get();
 
         return view('notes.index', compact('notes'));
     }
@@ -81,7 +82,7 @@ class NoteController extends Controller
 
         $note->update($validated);
 
-        return redirect()->route('notes.index')->with('success', 'Заметка успещно обновлена!');
+        return redirect()->route('notes.index')->with('success', 'Заметка успешно обновлена!');
     }
 
     /**
@@ -111,15 +112,17 @@ class NoteController extends Controller
      */
     public function processImport(Request $request)
     {
-        $validated = $request->validate([
-            'api_url' => 'required|url',
+        $request->validate([
+            'import_file' => 'required|file|max:2048|mimes:csv,json,xml',
         ], [
-            'api_url.required' => 'URL API обязателен для заполнения',
-            'api_url.url' => 'Введите корректный URL',
+            'import_file.required' => 'Файл обязателен для импорта',
+            'import_file.max' => 'Максимальный размер файла: 2 МБ',
+            'import_file.mimes' => 'Допустимые форматы: CSV, JSON, XML',
         ]);
 
-        // Отправить задачу в очередь
-        ImportNotesFromApiJob::dispatch(Auth::id(), $validated['api_url']);
+        $path = $request->file('import_file')->store('imports');
+
+        ImportNotesJob::dispatch(Auth::id(), $path);
 
         return redirect()->route('notes.index')
             ->with('success', 'Импорт запущен! Заметки появятся через несколько секунд.');

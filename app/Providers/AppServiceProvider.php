@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Services\CSVImporter;
 use App\Services\Interfaces\IImporter;
 use App\Services\JSONImporter;
+use App\Services\XMLImporter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(IImporter::class, JSONImporter::class);
+        $this->app->bind(IImporter::class, CSVImporter::class);
     }
 
     /**
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+
     }
 }

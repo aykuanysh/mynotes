@@ -7,13 +7,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-class ImportNotesFromApiJob implements ShouldQueue
+class ImportNotesJob implements ShouldQueue
 {
     use Queueable;
 
     public function __construct(
         protected int $userId,
-        protected string $apiUrl
+        protected string $filePath
     ) {}
 
     /**
@@ -21,7 +21,7 @@ class ImportNotesFromApiJob implements ShouldQueue
      */
     public function handle(IImporter $importer): void
     {
-        $importer->importHandle($this->apiUrl, $this->userId);
+        $importer->importHandle($this->filePath, $this->userId);
     }
 
     /**
