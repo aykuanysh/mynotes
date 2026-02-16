@@ -227,6 +227,15 @@
             <div class="header-buttons">
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">← Панель</a>
                 <a href="{{ route('notes.import') }}" class="btn btn-primary">📥 Импорт</a>
+                @if(Route::has('note.statistics'))
+                <a href="{{ route('note.statistics') }}" class="btn btn-primary">Статистика</a>
+                @endif
+                @if(Route::has('notes.export'))
+                <form action="{{ route('notes.export') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">📤 Экспорт в Excel</button>
+                </form>
+                @endif
                 <a href="{{ route('notes.create') }}" class="btn btn-success">+ Создать заметку</a>
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
@@ -239,6 +248,15 @@
         @if(session('success'))
         <div class="alert">
             ✓ {{ session('success') }}
+            @if(session('export_filename') && Route::has('notes.export.download'))
+                <br><a href="{{ route('notes.export.download', session('export_filename')) }}" style="color: white; text-decoration: underline; font-weight: bold;">📥 Скачать файл</a>
+            @endif
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert" style="background: #ff6b6b;">
+            ✗ {{ session('error') }}
         </div>
         @endif
 

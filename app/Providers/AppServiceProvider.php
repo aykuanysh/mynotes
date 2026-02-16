@@ -15,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(IImporter::class, CSVImporter::class);
+        $this->app->singleton(IImporter::class, CSVImporter::class);
     }
 
     /**
